@@ -8,8 +8,6 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { AboutSection } from './components/AboutSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
-import { AdminLogin } from './components/AdminLogin';
-import { AdminDashboard } from './components/AdminDashboard';
 
 // Fallback initial content in case API is temporarily waiting
 const fallbackContent: WebsiteContent = {
@@ -251,74 +249,34 @@ const fallbackContent: WebsiteContent = {
 
 export function App() {
   const [content, setContent] = useState<WebsiteContent>(fallbackContent);
-  const [adminToken, setAdminToken] = useState<string | null>(null);
-  const [showAdmin, setShowAdmin] = useState<boolean>(false);
   const [selectedServicePreset, setSelectedServicePreset] = useState<string>('Business Website');
 
   useEffect(() => {
-    // 1. Fetch live content from backend
+    // Fetch live content if backend is running, otherwise retain fallbackContent
     fetchContent();
-
-    // 2. Check existing admin token in local storage
-    const token = localStorage.getItem('devlophic_admin_token');
-    if (token) {
-      verifyAdminToken(token);
-    }
   }, []);
 
   const fetchContent = async () => {
     try {
       const res = await fetch('/api/content');
       if (res.ok) {
-        const data = await res.json();
-        setContent(data);
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            setContent(data);
+          }
+        }
       }
     } catch (err) {
-      console.warn('Backend server connecting, using fallback content', err);
+      // Backend not running or static mode - keep default fallbackContent
     }
-  };
-
-  const verifyAdminToken = async (token: string) => {
-    try {
-      const res = await fetch('/api/auth/me', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (res.ok) {
-        setAdminToken(token);
-      } else {
-        localStorage.removeItem('devlophic_admin_token');
-        localStorage.removeItem('devlophic_admin_user');
-        setAdminToken(null);
-      }
-    } catch (err) {
-      // offline or server not ready
-    }
-  };
-
-  const handleAdminLoginSuccess = (token: string, user: any) => {
-    setAdminToken(token);
-    // Keep admin open in dashboard mode
-  };
-
-  const handleAdminLogout = () => {
-    localStorage.removeItem('devlophic_admin_token');
-    localStorage.removeItem('devlophic_admin_user');
-    setAdminToken(null);
-    setShowAdmin(false);
-  };
-
-  const handleContentUpdated = (newContent: WebsiteContent) => {
-    setContent(newContent);
   };
 
   return (
     <div className="min-h-screen bg-[#080B10] text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-black">
       {/* Navbar */}
-      <Navbar
-        content={content}
-        onOpenAdmin={() => setShowAdmin(true)}
-        isAdminLoggedIn={!!adminToken}
-      />
+      <Navbar content={content} />
 
       {/* Hero Section */}
       <main className="flex-grow">
@@ -347,27 +305,7 @@ export function App() {
       </main>
 
       {/* Footer */}
-      <Footer content={content} onOpenAdmin={() => setShowAdmin(true)} />
-
-      {/* Admin Auth Modal / Dashboard Modal */}
-      {showAdmin && (
-        <>
-          {adminToken ? (
-            <AdminDashboard
-              initialContent={content}
-              token={adminToken}
-              onLogout={handleAdminLogout}
-              onContentUpdated={handleContentUpdated}
-              onClose={() => setShowAdmin(false)}
-            />
-          ) : (
-            <AdminLogin
-              onSuccess={handleAdminLoginSuccess}
-              onCancel={() => setShowAdmin(false)}
-            />
-          )}
-        </>
-      )}
+      <Footer content={content} />
     </div>
   );
 }

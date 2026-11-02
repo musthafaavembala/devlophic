@@ -94,19 +94,25 @@ async function handleContact(context: PagesContext): Promise<Response> {
 
   const id = `inq-${Date.now()}-${crypto.randomUUID().slice(0, 5)}`;
   const createdAt = new Date().toISOString();
-  await context.env.DB.prepare(`
-    INSERT INTO submissions (id, name, email, phone, service_category, timeline, message, created_at, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'unread')
-  `).bind(
-    id,
-    name,
-    email,
-    typeof body.phone === 'string' ? body.phone.trim() : '',
-    typeof body.serviceCategory === 'string' ? body.serviceCategory : 'Website Development',
-    typeof body.timeline === 'string' ? body.timeline : 'Standard (2-4 weeks)',
-    message,
-    createdAt
-  ).run();
+  if (context.env?.DB) {
+    try {
+      await context.env.DB.prepare(`
+        INSERT INTO submissions (id, name, email, phone, service_category, timeline, message, created_at, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'unread')
+      `).bind(
+        id,
+        name,
+        email,
+        typeof body.phone === 'string' ? body.phone.trim() : '',
+        typeof body.serviceCategory === 'string' ? body.serviceCategory : 'Website Development',
+        typeof body.timeline === 'string' ? body.timeline : 'Standard (2-4 weeks)',
+        message,
+        createdAt
+      ).run();
+    } catch (dbErr) {
+      console.warn('Could not persist submission to D1:', dbErr);
+    }
+  }
 
   return jsonResponse({
     success: true,

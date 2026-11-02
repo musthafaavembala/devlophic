@@ -57,25 +57,44 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
     setError(null);
     setLoading(true);
 
     try {
       const response = await fetch('/api/contact', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(formData)
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      let data: any = null;
+
+      if (contentType.includes('application/json')) {
+        try {
+          data = await response.json();
+        } catch {
+          data = null;
+        }
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to submit inquiry');
+        const errorMsg = data?.error || 'Unable to submit enquiry right now. Please reach out to us directly via WhatsApp or Email below.';
+        throw new Error(errorMsg);
       }
 
       setSubmitted(true);
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try contacting us via WhatsApp or Email directly.');
+      console.error('Contact submission error:', err);
+      const isJsonParseError = err?.message && (err.message.includes('Unexpected token') || err.message.includes('is not valid JSON'));
+      const friendlyMessage = isJsonParseError
+        ? 'Could not connect to the submission service. Please contact us directly via WhatsApp or Email below.'
+        : (err?.message || 'Something went wrong. Please reach out via WhatsApp or Email.');
+      setError(friendlyMessage);
     } finally {
       setLoading(false);
     }
@@ -271,9 +290,29 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {error && (
-                    <div className="p-3.5 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 shrink-0" />
-                      <span>{error}</span>
+                    <div className="p-4 rounded-xl bg-red-950/60 border border-red-500/40 text-red-300 text-xs space-y-2.5">
+                      <div className="flex items-start gap-2">
+                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span>{error}</span>
+                      </div>
+                      <div className="pt-1 flex flex-wrap items-center gap-2">
+                        <a
+                          href={`https://wa.me/91${cleanPhone}?text=Hello%20Devlophic,%20my%20name%20is%20${encodeURIComponent(formData.name || 'Client')}.%20I'm%20inquiring%20about%20a%20${encodeURIComponent(formData.serviceCategory)}%20project:%20${encodeURIComponent(formData.message || 'Please contact me.')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/30 border border-emerald-400/40 text-emerald-300 hover:text-white hover:bg-emerald-600/50 font-semibold text-[11px] transition-colors"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>Direct WhatsApp</span>
+                        </a>
+                        <a
+                          href={`mailto:${content.contact.email}?subject=Project%20Inquiry%20-%20${encodeURIComponent(formData.serviceCategory)}&body=Name:%20${encodeURIComponent(formData.name)}%0AEmail:%20${encodeURIComponent(formData.email)}%0APhone:%20${encodeURIComponent(formData.phone)}%0ATimeline:%20${encodeURIComponent(formData.timeline)}%0A%0AMessage:%0A${encodeURIComponent(formData.message)}`}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 hover:text-white font-semibold text-[11px] transition-colors"
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                          <span>Direct Email</span>
+                        </a>
+                      </div>
                     </div>
                   )}
 

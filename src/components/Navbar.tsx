@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { WebsiteContent } from '../types';
-import { Menu, X, ArrowUpRight, MessageSquare, Shield, ExternalLink, Globe } from 'lucide-react';
+import { Menu, X, ArrowUpRight, MessageSquare, ExternalLink, Globe } from 'lucide-react';
 
 interface NavbarProps {
   content: WebsiteContent;
-  onOpenAdmin: () => void;
-  isAdminLoggedIn: boolean;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ content, onOpenAdmin, isAdminLoggedIn }) => {
+export const Navbar: React.FC<NavbarProps> = ({ content }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -115,33 +113,10 @@ export const Navbar: React.FC<NavbarProps> = ({ content, onOpenAdmin, isAdminLog
               <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
 
-            {/* Admin Portal Toggle */}
-            <button
-              onClick={onOpenAdmin}
-              className={`p-2 rounded-lg border transition-all ${
-                isAdminLoggedIn
-                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
-                  : 'bg-slate-900/60 border-white/10 text-slate-400 hover:text-white hover:border-white/20'
-              }`}
-              title={isAdminLoggedIn ? 'Admin Dashboard (Active)' : 'Admin Login'}
-            >
-              <Shield className="w-4 h-4" />
-            </button>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex items-center gap-2 md:hidden">
-            <button
-              onClick={onOpenAdmin}
-              className={`p-2 rounded-lg border text-xs ${
-                isAdminLoggedIn
-                  ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300'
-                  : 'bg-slate-900/60 border-white/10 text-slate-400'
-              }`}
-              title="Admin Portal"
-            >
-              <Shield className="w-4 h-4" />
-            </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg bg-slate-900/80 border border-white/10 text-slate-300 hover:text-white"

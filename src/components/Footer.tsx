@@ -4,8 +4,7 @@ import {
   Mail,
   Phone,
   MessageCircle,
-  ArrowUp,
-  Shield
+  ArrowUp
 } from 'lucide-react';
 import {
   FacebookBrandIcon,
@@ -19,10 +18,9 @@ import {
 
 interface FooterProps {
   content: WebsiteContent;
-  onOpenAdmin: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ content }) => {
   const instagramUrl = content.socials.instagram;
   const whatsappUrl = content.socials.whatsapp || content.contact.whatsappDirectUrl ||
     `https://wa.me/91${content.contact.whatsapp.replace(/[^0-9]/g, '')}`;
@@ -141,14 +139,6 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin }) => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button
-              onClick={onOpenAdmin}
-              className="flex items-center gap-1.5 text-slate-500 hover:text-cyan-400 transition-colors"
-            >
-              <Shield className="w-3.5 h-3.5" />
-              <span>Admin Portal</span>
-            </button>
-
             <button
               onClick={scrollToTop}
               className="p-2 rounded-lg bg-slate-900 border border-white/5 text-slate-400 hover:text-white hover:border-white/20 transition-all"
