@@ -17,7 +17,7 @@ const initialContent = {
   brandName: "Devlophic",
   tagline: "High-Performance Website Development for Forward-Thinking Brands",
   heroHeading: "We Build Fast, High-Converting Websites That Grow Your Business",
-  heroSubheading: "Devlophic is a premier freelance website development studio. We architect bespoke, responsive, and performance-tuned web experiences designed to elevate your company's presence and accelerate conversions.",
+  heroSubheading: "",
   about: {
     title: "About Devlophic",
     headline: "Engineering Digital Excellence for Ambitious Companies",

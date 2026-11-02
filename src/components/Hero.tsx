@@ -7,6 +7,10 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ content }) => {
+  const heroSubheading = content.heroSubheading.startsWith(
+    'Devlophic is a premier freelance website development studio.'
+  ) ? '' : content.heroSubheading;
+
   return (
     <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
       {/* Background Neon Orbs */}
@@ -47,10 +51,11 @@ export const Hero: React.FC<HeroProps> = ({ content }) => {
           </h1>
 
           {/* Subheading */}
-          <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed mb-10 max-w-2xl">
-            {content.heroSubheading ||
-              'Devlophic is a dedicated freelance website development company. We engineer bespoke, fast, and high-converting web solutions tailored to scale your brand.'}
-          </p>
+          {heroSubheading && (
+            <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed mb-10 max-w-2xl">
+              {heroSubheading}
+            </p>
+          )}
 
           {/* CTA Group */}
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-14">
