@@ -97,15 +97,14 @@ async function handleContact(context: PagesContext): Promise<Response> {
   if (context.env?.DB) {
     try {
       await context.env.DB.prepare(`
-        INSERT INTO submissions (id, name, email, phone, service_category, timeline, message, created_at, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'unread')
+        INSERT INTO submissions (id, name, email, phone, service_category, message, created_at, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'unread')
       `).bind(
         id,
         name,
         email,
         typeof body.phone === 'string' ? body.phone.trim() : '',
         typeof body.serviceCategory === 'string' ? body.serviceCategory : 'Website Development',
-        typeof body.timeline === 'string' ? body.timeline : 'Standard (2-4 weeks)',
         message,
         createdAt
       ).run();
@@ -139,7 +138,7 @@ async function handleSubmissions(context: PagesContext, id?: string): Promise<Re
   await verifyAdminToken(context.env, context.request);
   if (!id && context.request.method === 'GET') {
     const result = await context.env.DB.prepare(`
-      SELECT id, name, email, phone, service_category, timeline, message, created_at, status
+      SELECT id, name, email, phone, service_category, message, created_at, status
       FROM submissions ORDER BY created_at DESC
     `).all<Record<string, unknown>>();
     return jsonResponse(result.results.map(toSubmission));
@@ -150,7 +149,7 @@ async function handleSubmissions(context: PagesContext, id?: string): Promise<Re
       throw new ApiError(400, 'Invalid submission status.');
     }
     const result = await context.env.DB.prepare(
-      'UPDATE submissions SET status = ? WHERE id = ? RETURNING id, name, email, phone, service_category, timeline, message, created_at, status'
+      'UPDATE submissions SET status = ? WHERE id = ? RETURNING id, name, email, phone, service_category, message, created_at, status'
     ).bind(body.status, id).first<Record<string, unknown>>();
     if (!result) {
       throw new ApiError(404, 'Submission not found.');

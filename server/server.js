@@ -134,7 +134,7 @@ app.get('/api/content', (req, res) => {
 // 2. Submit Contact Inquiry / Quote Request
 app.post('/api/contact', (req, res) => {
   try {
-    const { name, email, phone, serviceCategory, timeline, message } = req.body;
+    const { name, email, phone, serviceCategory, message } = req.body;
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Please provide your name, email, and project details.' });
@@ -151,7 +151,6 @@ app.post('/api/contact', (req, res) => {
       email: email.trim().toLowerCase(),
       phone: phone ? phone.trim() : '',
       serviceCategory: serviceCategory || 'Website Development',
-      timeline: timeline || 'Standard (2-4 weeks)',
       message: message.trim(),
       createdAt: new Date().toISOString(),
       status: 'unread'

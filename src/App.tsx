@@ -8,6 +8,7 @@ import { ProjectsSection } from './components/ProjectsSection';
 import { AboutSection } from './components/AboutSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
+import { ProjectDemo } from './components/ProjectDemo';
 
 // Fallback initial content in case API is temporarily waiting
 const fallbackContent: WebsiteContent = {
@@ -181,7 +182,7 @@ const fallbackContent: WebsiteContent = {
       shortDescription: "Enterprise corporate platform with custom service showcases, lead generation funnels, and executive branding.",
       fullDescription: "A comprehensive business platform engineered for high-growth enterprises. Features dynamic service catalogs, interactive ROI calculators, high-conversion contact pathways, and seamless responsive design.",
       tags: ["React", "TypeScript", "Tailwind CSS", "Node.js", "SEO Optimized"],
-      liveUrl: "https://devlophic.com/demo/apex-nexus",
+      liveUrl: "/demo/apex-nexus",
       githubUrl: "https://github.com/devlophic/apex-nexus-web",
       externalUrl: "https://devlophic.com",
       imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200&auto=format&fit=crop",
@@ -195,7 +196,7 @@ const fallbackContent: WebsiteContent = {
       shortDescription: "Interactive creative portfolio website featuring smooth transitions, fluid video reels, and case studies.",
       fullDescription: "Bespoke digital portfolio engineered for design studios and creative agencies. Highlights include dynamic portfolio filters, fluid lightbox galleries, dark-mode first aesthetic, and frictionless client inquiry capture.",
       tags: ["Next.js", "Tailwind CSS", "Framer Motion", "Responsive Design"],
-      liveUrl: "https://devlophic.com/demo/velox-studio",
+      liveUrl: "/demo/velox-studio",
       githubUrl: "https://github.com/devlophic/velox-portfolio",
       externalUrl: "https://devlophic.com",
       imageUrl: "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?q=80&w=1200&auto=format&fit=crop",
@@ -209,7 +210,7 @@ const fallbackContent: WebsiteContent = {
       shortDescription: "Ultra-fast, high-converting product landing page with interactive pricing calculators and signup flow.",
       fullDescription: "Engineered specifically for conversion optimization. Delivers 98+ Google Lighthouse scores, modular testimonial carousels, dynamic pricing toggle, and integrated email waitlist capture.",
       tags: ["React", "Tailwind CSS", "Analytics", "Sub-Second Load"],
-      liveUrl: "https://devlophic.com/demo/novapay",
+      liveUrl: "/demo/novapay",
       githubUrl: "https://github.com/devlophic/novapay-landing",
       externalUrl: "https://devlophic.com",
       imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop",
@@ -223,7 +224,7 @@ const fallbackContent: WebsiteContent = {
       shortDescription: "Modern headless e-commerce store with rapid product filtering, instant cart drawer, and Stripe checkout.",
       fullDescription: "A high-conversion digital storefront built for modern direct-to-consumer sales. Includes instant client-side cart updates, secure multi-currency payment checkout, automated stock alerts, and lightning-fast product pages.",
       tags: ["React", "Node.js", "Stripe API", "Tailwind CSS", "E-commerce"],
-      liveUrl: "https://devlophic.com/demo/luxevibe",
+      liveUrl: "/demo/luxevibe",
       githubUrl: "https://github.com/devlophic/luxevibe-commerce",
       externalUrl: "https://devlophic.com",
       imageUrl: "https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=1200&auto=format&fit=crop",
@@ -237,7 +238,7 @@ const fallbackContent: WebsiteContent = {
       shortDescription: "Bespoke full-stack web application with role-based client dashboard, automated scheduling, and reporting.",
       fullDescription: "Tailored custom web solution built to replace manual administrative workflows. Includes secure authenticated client dashboards, real-time project milestone tracking, document exchange, and automated email notifications.",
       tags: ["TypeScript", "React", "Express.js", "REST API", "Auth"],
-      liveUrl: "https://devlophic.com/demo/synapse-portal",
+      liveUrl: "/demo/synapse-portal",
       githubUrl: "https://github.com/devlophic/synapse-portal",
       externalUrl: "https://devlophic.com",
       imageUrl: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop",
@@ -250,10 +251,13 @@ const fallbackContent: WebsiteContent = {
 export function App() {
   const [content, setContent] = useState<WebsiteContent>(fallbackContent);
   const [selectedServicePreset, setSelectedServicePreset] = useState<string>('Business Website');
+  const demoSlug = window.location.pathname.match(/^\/demo\/([^/]+)\/?$/)?.[1];
 
   useEffect(() => {
     // Fetch live content if backend is running, otherwise retain fallbackContent
-    fetchContent();
+    if (!window.location.pathname.match(/^\/demo\/[^/]+\/?$/)) {
+      fetchContent();
+    }
   }, []);
 
   const fetchContent = async () => {
@@ -272,6 +276,10 @@ export function App() {
       // Backend not running or static mode - keep default fallbackContent
     }
   };
+
+  if (demoSlug) {
+    return <ProjectDemo slug={demoSlug} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#080B10] text-slate-100 flex flex-col selection:bg-cyan-500 selection:text-black">

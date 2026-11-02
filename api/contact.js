@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, email, phone, serviceCategory, timeline, message } = req.body || {};
+    const { name, email, phone, serviceCategory, message } = req.body || {};
 
     if (!name || !email || !message || !String(name).trim() || !String(email).trim() || !String(message).trim()) {
       return res.status(400).json({ error: 'Please provide your name, email, and project details.' });

@@ -273,7 +273,6 @@ export function toSubmission(row: Record<string, unknown>): ContactSubmission {
     email: String(row.email),
     phone: String(row.phone ?? ''),
     serviceCategory: String(row.service_category),
-    timeline: String(row.timeline ?? ''),
     message: String(row.message),
     createdAt: String(row.created_at),
     status: row.status as ContactSubmission['status']

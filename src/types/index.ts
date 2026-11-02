@@ -79,7 +79,6 @@ export interface ContactSubmission {
   email: string;
   phone?: string;
   serviceCategory: string;
-  timeline?: string;
   message: string;
   createdAt: string;
   status: 'unread' | 'read' | 'contacted';

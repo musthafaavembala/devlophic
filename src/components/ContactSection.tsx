@@ -27,13 +27,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     email: '',
     phone: '',
     serviceCategory: selectedServicePreset || 'Business Website',
-    timeline: 'Standard (2-4 weeks)',
     message: ''
   });
 
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [submissionWarning, setSubmissionWarning] = useState<string | null>(null);
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
   const [copiedEmail, setCopiedEmail] = useState(false);
   const [copiedPhone, setCopiedPhone] = useState(false);
 
@@ -59,7 +60,66 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
     e.preventDefault();
     if (loading) return;
     setError(null);
+    setSubmissionWarning(null);
+
+    const name = formData.name.trim();
+    const email = formData.email.trim();
+    const phone = formData.phone.trim();
+    const category = formData.serviceCategory.trim();
+    const message = formData.message.trim();
+
+    if (!name || !email || !phone || !category || !message) {
+      setError('Please complete your name, email, WhatsApp number, category, and message.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    const configuredWhatsAppNumber = [
+      content.contact.whatsappDirectUrl,
+      content.socials.whatsapp
+    ].map((url) => url.match(/^https:\/\/(?:www\.)?wa\.me\/(\d{8,15})(?:[/?#]|$)/i)?.[1])
+      .find(Boolean);
+
+    if (!configuredWhatsAppNumber) {
+      setError('WhatsApp is not configured. Please contact us by email instead.');
+      return;
+    }
+
+    const whatsappMessage = [
+      'New Project Enquiry',
+      `Name: ${name}`,
+      `Gmail: ${email}`,
+      `Category: ${category}`,
+      `Message: ${message}`
+    ].join('\n');
+    const enquiryWhatsAppUrl = `https://wa.me/${configuredWhatsAppNumber}?text=${encodeURIComponent(whatsappMessage)}`;
+
     setLoading(true);
+
+    let whatsappWindow: Window | null;
+    try {
+      whatsappWindow = window.open(enquiryWhatsAppUrl, '_blank');
+      if (whatsappWindow) {
+        whatsappWindow.opener = null;
+      }
+    } catch (openError) {
+      console.error('Could not open WhatsApp enquiry:', openError);
+      setWhatsappUrl(enquiryWhatsAppUrl);
+      setError('We could not open WhatsApp automatically. Use the button below to open your pre-filled enquiry.');
+      setLoading(false);
+      return;
+    }
+
+    if (!whatsappWindow) {
+      setWhatsappUrl(enquiryWhatsAppUrl);
+      setError('Your browser blocked the WhatsApp window. Use the button below to open your pre-filled enquiry.');
+      setLoading(false);
+      return;
+    }
+    setWhatsappUrl(enquiryWhatsAppUrl);
 
     try {
       const response = await fetch('/api/contact', {
@@ -68,7 +128,14 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          name,
+          email,
+          phone,
+          serviceCategory: category,
+          message
+        })
       });
 
       const contentType = response.headers.get('content-type') || '';
@@ -88,22 +155,18 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
       }
 
       setSubmitted(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Contact submission error:', err);
-      const isJsonParseError = err?.message && (err.message.includes('Unexpected token') || err.message.includes('is not valid JSON'));
-      const friendlyMessage = isJsonParseError
-        ? 'Could not connect to the submission service. Please contact us directly via WhatsApp or Email below.'
-        : (err?.message || 'Something went wrong. Please reach out via WhatsApp or Email.');
-      setError(friendlyMessage);
+      setSubmissionWarning(
+        'WhatsApp was opened, but we could not save a copy of your enquiry to our dashboard. Please send it in WhatsApp to complete your enquiry.'
+      );
+      setSubmitted(true);
     } finally {
       setLoading(false);
     }
   };
 
-  const cleanPhone = content.contact.whatsapp.replace(/[^0-9]/g, '');
-  const whatsAppDirectUrl = `https://wa.me/91${cleanPhone}?text=Hello%20Devlophic,%20I'm%20interested%20in%20a%20${encodeURIComponent(
-    formData.serviceCategory
-  )}%20project.`;
+  const whatsAppDirectUrl = content.contact.whatsappDirectUrl || content.socials.whatsapp;
 
   return (
     <section id="contact" className="py-24 relative overflow-hidden bg-[#07090e]">
@@ -245,7 +308,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                 Request a Website Development Quote
               </h3>
               <p className="text-slate-400 text-xs sm:text-sm mb-6">
-                Tell us about your brand and website requirements. We will analyze your needs and provide a clear timeline and development plan.
+                Tell us about your brand and website requirements. We will analyze your needs and provide a clear project plan.
               </p>
 
               {submitted ? (
@@ -254,30 +317,36 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                     <CheckCircle2 className="w-8 h-8" />
                   </div>
                   <h4 className="font-heading text-2xl font-bold text-white mb-2">
-                    Inquiry Received!
+                    WhatsApp Opened
                   </h4>
                   <p className="text-slate-300 text-sm max-w-md mb-6">
-                    Thank you for reaching out to Devlophic. We will review your project details and get back to you via email shortly.
+                    Your enquiry is ready in WhatsApp. Review the details and tap Send there to deliver it to Devlophic.
                   </p>
+                  {submissionWarning && (
+                    <p className="text-amber-300 text-xs max-w-md mb-5" role="status">
+                      {submissionWarning}
+                    </p>
+                  )}
                   <div className="flex flex-col sm:flex-row gap-3">
                     <a
-                      href={whatsAppDirectUrl}
+                      href={whatsappUrl || whatsAppDirectUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-6 py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
                     >
                       <MessageCircle className="w-4 h-4" />
-                      <span>Also Send Via WhatsApp</span>
+                      <span>Reopen WhatsApp Enquiry</span>
                     </a>
                     <button
                       onClick={() => {
                         setSubmitted(false);
+                        setSubmissionWarning(null);
+                        setWhatsappUrl(null);
                         setFormData({
                           name: '',
                           email: '',
                           phone: '',
                           serviceCategory: 'Business Website',
-                          timeline: 'Standard (2-4 weeks)',
                           message: ''
                         });
                       }}
@@ -296,22 +365,17 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         <span>{error}</span>
                       </div>
                       <div className="pt-1 flex flex-wrap items-center gap-2">
-                        <a
-                          href={`https://wa.me/91${cleanPhone}?text=Hello%20Devlophic,%20my%20name%20is%20${encodeURIComponent(formData.name || 'Client')}.%20I'm%20inquiring%20about%20a%20${encodeURIComponent(formData.serviceCategory)}%20project:%20${encodeURIComponent(formData.message || 'Please contact me.')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/30 border border-emerald-400/40 text-emerald-300 hover:text-white hover:bg-emerald-600/50 font-semibold text-[11px] transition-colors"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span>Direct WhatsApp</span>
-                        </a>
-                        <a
-                          href={`mailto:${content.contact.email}?subject=Project%20Inquiry%20-%20${encodeURIComponent(formData.serviceCategory)}&body=Name:%20${encodeURIComponent(formData.name)}%0AEmail:%20${encodeURIComponent(formData.email)}%0APhone:%20${encodeURIComponent(formData.phone)}%0ATimeline:%20${encodeURIComponent(formData.timeline)}%0A%0AMessage:%0A${encodeURIComponent(formData.message)}`}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-950/60 border border-cyan-500/30 text-cyan-300 hover:text-white font-semibold text-[11px] transition-colors"
-                        >
-                          <Mail className="w-3.5 h-3.5" />
-                          <span>Direct Email</span>
-                        </a>
+                        {whatsappUrl && (
+                          <a
+                            href={whatsappUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/30 border border-emerald-400/40 text-emerald-300 hover:text-white hover:bg-emerald-600/50 font-semibold text-[11px] transition-colors"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>Open WhatsApp Enquiry</span>
+                          </a>
+                        )}
                       </div>
                     </div>
                   )}
@@ -324,6 +388,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                       <input
                         type="text"
                         required
+                        autoComplete="name"
                         placeholder="e.g. Alex Vance or Nexus Corp"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -338,6 +403,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                       <input
                         type="email"
                         required
+                        autoComplete="email"
                         placeholder="you@company.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -349,10 +415,13 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                        WhatsApp / Contact Number
+                        WhatsApp Number *
                       </label>
                       <input
-                        type="text"
+                        type="tel"
+                        required
+                        autoComplete="tel"
+                        inputMode="tel"
                         placeholder="e.g. +91 9876543210"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -365,6 +434,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         Website Development Category *
                       </label>
                       <select
+                        required
                         value={formData.serviceCategory}
                         onChange={(e) => setFormData({ ...formData, serviceCategory: e.target.value })}
                         className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs sm:text-sm focus:outline-none focus:border-cyan-400 transition-colors"
@@ -376,22 +446,6 @@ export const ContactSection: React.FC<ContactSectionProps> = ({
                         <option value="Custom Website">Custom Website</option>
                       </select>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                      Target Project Timeline
-                    </label>
-                    <select
-                      value={formData.timeline}
-                      onChange={(e) => setFormData({ ...formData, timeline: e.target.value })}
-                      className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-white/10 text-white text-xs sm:text-sm focus:outline-none focus:border-cyan-400 transition-colors"
-                    >
-                      <option value="Urgent (Within 1-2 weeks)">Urgent (Within 1-2 weeks)</option>
-                      <option value="Standard (2-4 weeks)">Standard (2-4 weeks)</option>
-                      <option value="Flexible (1-2 months)">Flexible (1-2 months)</option>
-                      <option value="Just exploring quotes">Just exploring quotes</option>
-                    </select>
                   </div>
 
                   <div>

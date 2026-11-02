@@ -60,15 +60,14 @@ export async function onRequestPost(context: PagesContext): Promise<Response> {
     if (context.env?.DB) {
       try {
         await context.env.DB.prepare(`
-          INSERT INTO submissions (id, name, email, phone, service_category, timeline, message, created_at, status)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'unread')
+          INSERT INTO submissions (id, name, email, phone, service_category, message, created_at, status)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 'unread')
         `).bind(
           id,
           name,
           email,
           typeof body.phone === 'string' ? body.phone.trim() : '',
           typeof body.serviceCategory === 'string' ? body.serviceCategory : 'Website Development',
-          typeof body.timeline === 'string' ? body.timeline : 'Standard (2-4 weeks)',
           message,
           createdAt
         ).run();
