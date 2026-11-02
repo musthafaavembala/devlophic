@@ -133,11 +133,6 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onSuccess, onCancel }) =
           </button>
         </form>
 
-        <div className="mt-6 pt-4 border-t border-white/5 text-center">
-          <p className="text-[11px] text-slate-500">
-            Initial master credentials: <code className="text-cyan-400">admin</code> / <code className="text-cyan-400">DevlophicAdmin2026!</code>
-          </p>
-        </div>
       </div>
     </div>
   );

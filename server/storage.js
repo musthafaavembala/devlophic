@@ -304,16 +304,19 @@ function updateSubmissionStatus(id, status) {
 // Admin User Management
 function initAdmin() {
   if (!fs.existsSync(ADMIN_FILE)) {
-    const defaultPassword = 'DevlophicAdmin2026!';
+    const initialPassword = process.env.ADMIN_PASSWORD;
+    if (!initialPassword) {
+      throw new Error('Set ADMIN_PASSWORD before initializing the admin account.');
+    }
     const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(defaultPassword, salt);
+    const hash = bcrypt.hashSync(initialPassword, salt);
     const adminData = {
       username: 'admin',
       passwordHash: hash,
       updatedAt: new Date().toISOString()
     };
     fs.writeFileSync(ADMIN_FILE, JSON.stringify(adminData, null, 2), 'utf-8');
-    console.log('Initialized default admin account: admin / DevlophicAdmin2026!');
+    console.log('Initialized the admin account.');
   }
 }
 

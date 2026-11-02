@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const {
@@ -16,7 +17,12 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'devlophic-super-secret-jwt-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET || (
+  process.env.NODE_ENV === 'production' ? undefined : crypto.randomBytes(32).toString('hex')
+);
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET must be configured in production.');
+}
 
 // Uploads directory
 const UPLOADS_DIR = path.join(__dirname, '..', 'public', 'uploads');

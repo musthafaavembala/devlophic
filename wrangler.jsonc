@@ -1,0 +1,14 @@
+{
+  "name": "devlophic-portfolio",
+  "compatibility_date": "2026-11-02",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "devlophic-content",
+      "database_id": "bfddec51-c929-41f9-86e3-71594e2d3299",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

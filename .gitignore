@@ -7,6 +7,9 @@ dist/
 # Vite
 .vite/
 
+# Wrangler local state
+.wrangler/
+
 # Environment variables
 .env
 .env.local
