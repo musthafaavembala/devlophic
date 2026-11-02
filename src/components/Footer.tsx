@@ -8,10 +8,13 @@ import {
   Shield
 } from 'lucide-react';
 import {
-  InstagramIcon,
-  GithubIcon,
-  LinkedinIcon,
-  TwitterIcon
+  FacebookBrandIcon,
+  InstagramBrandIcon,
+  LinkedInBrandIcon,
+  TelegramBrandIcon,
+  WhatsAppBrandIcon,
+  XBrandIcon,
+  YouTubeBrandIcon
 } from './Icons';
 
 interface FooterProps {
@@ -20,6 +23,10 @@ interface FooterProps {
 }
 
 export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin }) => {
+  const instagramUrl = content.socials.instagram;
+  const whatsappUrl = content.socials.whatsapp || content.contact.whatsappDirectUrl ||
+    `https://wa.me/91${content.contact.whatsapp.replace(/[^0-9]/g, '')}`;
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -50,64 +57,6 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin }) => {
                 'High-Performance Website Development for Forward-Thinking Brands. Engineered for speed, clean architecture, and measurable business growth.'}
             </p>
 
-            {/* Social Links */}
-            <div className="flex items-center gap-2.5 pt-2">
-              {content.socials.instagram && (
-                <a
-                  href={content.socials.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-400 hover:text-pink-400 hover:border-pink-500/40 transition-colors"
-                  title="Instagram"
-                >
-                  <InstagramIcon className="w-4 h-4" />
-                </a>
-              )}
-              {content.contact.whatsapp && (
-                <a
-                  href={`https://wa.me/91${content.contact.whatsapp.replace(/[^0-9]/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-400 hover:text-emerald-400 hover:border-emerald-500/40 transition-colors"
-                  title="WhatsApp"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                </a>
-              )}
-              {content.socials.github && (
-                <a
-                  href={content.socials.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-400 hover:text-white hover:border-white/30 transition-colors"
-                  title="GitHub"
-                >
-                  <GithubIcon className="w-4 h-4" />
-                </a>
-              )}
-              {content.socials.linkedin && (
-                <a
-                  href={content.socials.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-400 hover:text-blue-400 hover:border-blue-500/40 transition-colors"
-                  title="LinkedIn"
-                >
-                  <LinkedinIcon className="w-4 h-4" />
-                </a>
-              )}
-              {content.socials.twitter && (
-                <a
-                  href={content.socials.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/40 transition-colors"
-                  title="Twitter / X"
-                >
-                  <TwitterIcon className="w-4 h-4" />
-                </a>
-              )}
-            </div>
           </div>
 
           {/* Website Development Categories Links */}
@@ -209,6 +158,94 @@ export const Footer: React.FC<FooterProps> = ({ content, onOpenAdmin }) => {
             </button>
           </div>
         </div>
+
+        <section
+          aria-labelledby="footer-social-heading"
+          className="mt-10 border-t border-white/5 pt-8 text-center"
+        >
+          <h4
+            id="footer-social-heading"
+            className="mb-5 font-heading text-xs font-bold uppercase tracking-wider text-white"
+          >
+            Social Media
+          </h4>
+          <ul className="flex flex-wrap items-center justify-center gap-3">
+            <li>
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                title="Instagram"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:border-pink-500/40 hover:text-pink-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pink-400"
+              >
+                <InstagramBrandIcon className="h-5 w-5" />
+              </a>
+            </li>
+            <li>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                title="WhatsApp"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400 transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/40 hover:text-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"
+              >
+                <WhatsAppBrandIcon className="h-5 w-5" />
+              </a>
+            </li>
+            <li>
+              <span
+                role="img"
+                aria-label="Facebook"
+                title="Facebook"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400"
+              >
+                <FacebookBrandIcon className="h-5 w-5" />
+              </span>
+            </li>
+            <li>
+              <span
+                role="img"
+                aria-label="X"
+                title="X"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400"
+              >
+                <XBrandIcon className="h-5 w-5" />
+              </span>
+            </li>
+            <li>
+              <span
+                role="img"
+                aria-label="YouTube"
+                title="YouTube"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400"
+              >
+                <YouTubeBrandIcon className="h-5 w-5" />
+              </span>
+            </li>
+            <li>
+              <span
+                role="img"
+                aria-label="Telegram"
+                title="Telegram"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400"
+              >
+                <TelegramBrandIcon className="h-5 w-5" />
+              </span>
+            </li>
+            <li>
+              <span
+                role="img"
+                aria-label="LinkedIn"
+                title="LinkedIn"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-slate-900 text-slate-400"
+              >
+                <LinkedInBrandIcon className="h-5 w-5" />
+              </span>
+            </li>
+          </ul>
+        </section>
       </div>
     </footer>
   );
