@@ -5,6 +5,7 @@ import { Hero } from './components/Hero';
 import { ServicesSection } from './components/ServicesSection';
 import { TechnologiesSection } from './components/TechnologiesSection';
 import { ProjectsSection } from './components/ProjectsSection';
+import { MyProjectsSection } from './components/MyProjectsSection';
 import { AboutSection } from './components/AboutSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
@@ -327,8 +328,14 @@ export function App() {
         {/* Technical Expertise / Technologies */}
         <TechnologiesSection categories={content.technologies} />
 
+        <MyProjectsSection />
+
         {/* Our Projects / Portfolio */}
-        <ProjectsSection projects={content.projects} />
+        <ProjectsSection
+          projects={content.projects.filter(
+            (project) => project.id !== 'proj-6' && project.id !== 'proj-7'
+          )}
+        />
 
         {/* About Devlophic */}
         <AboutSection about={content.about} brandName={content.brandName} />
