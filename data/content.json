@@ -335,6 +335,41 @@
       "imageUrl": "https://images.unsplash.com/photo-1551836022-d5d88e9218df?q=80&w=1200&auto=format&fit=crop",
       "featured": false,
       "order": 5
+    },
+    {
+      "id": "proj-6",
+      "title": "E-World Service",
+      "category": "Business Website",
+      "shortDescription": "Online platform for E-World Service.",
+      "fullDescription": "A live web project for E-World Service, available at e-worldservice.vercel.app.",
+      "tags": [
+        "Web Service",
+        "Responsive Design"
+      ],
+      "liveUrl": "https://e-worldservice.vercel.app",
+      "githubUrl": "",
+      "externalUrl": "https://e-worldservice.vercel.app",
+      "imageUrl": "https://images.unsplash.com/photo-1497366754035-f200968a6e72?q=80&w=1200&auto=format&fit=crop",
+      "featured": false,
+      "order": 6
+    },
+    {
+      "id": "proj-7",
+      "title": "Kaliyattamukku Bus Time",
+      "category": "Custom Website",
+      "shortDescription": "Bus time information for the Kaliyattamukku area.",
+      "fullDescription": "A live bus time information project for Kaliyattamukku, available at kaliyattamukku-bus-time-8xp1.vercel.app.",
+      "tags": [
+        "Bus Schedule",
+        "Travel Information",
+        "Responsive Design"
+      ],
+      "liveUrl": "https://kaliyattamukku-bus-time-8xp1.vercel.app/",
+      "githubUrl": "",
+      "externalUrl": "https://kaliyattamukku-bus-time-8xp1.vercel.app/",
+      "imageUrl": "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?q=80&w=1200&auto=format&fit=crop",
+      "featured": false,
+      "order": 7
     }
   ]
 }
